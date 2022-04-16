@@ -8,6 +8,36 @@ public class User {
     private String nickname;
     private LocalDate birthdate;
 
+    public User(String email, String nickname, LocalDate birthdate) {
+        this.email = email;
+        this.nickname = nickname;
+        this.birthdate = birthdate;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public LocalDate getBirthdate() {
+        return birthdate;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setBirthdate(LocalDate birthdate) {
+        this.birthdate = birthdate;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
