@@ -31,6 +31,8 @@ public class UserController {
         return userService.findAll();
     }
 
+    @GetMapping(@PathVariable)
+
     @PostMapping()
     public User addUser(@RequestBody User user) throws UserAlreadyExistException, InvalidEmailException {
         log.debug("{}", user);

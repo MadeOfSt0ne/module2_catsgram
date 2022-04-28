@@ -2,10 +2,7 @@ package ru.yandex.practicum.catsgram.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.catsgram.models.Post;
 import ru.yandex.practicum.catsgram.service.PostService;
 
@@ -26,6 +23,11 @@ public class PostController {
     public List<Post> findAll() {
         log.debug("Текущее количество постов: {}", postService.findAll().size());
         return postService.findAll();
+    }
+
+    @GetMapping("/post/{postId}")
+    public Post findPost(@PathVariable Integer postId) {
+        return postService.findPostById(postId);
     }
 
     @PostMapping(value = "/post")

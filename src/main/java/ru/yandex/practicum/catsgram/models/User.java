@@ -8,6 +8,16 @@ public class User {
     private String nickname;
     private LocalDate birthdate;
 
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    private Integer userId;
+
     public User(String email, String nickname, LocalDate birthdate) {
         this.email = email;
         this.nickname = nickname;
@@ -40,21 +50,14 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj == null || obj.getClass() != this.getClass()) {
-            return false;
-        }
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
         User user = (User) obj;
         return email.equals(user.email);
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((email == null) ? 0 : email.hashCode());
-        return result;
+        return Objects.hash(email);
     }
 }
