@@ -2,12 +2,14 @@ package ru.yandex.practicum.catsgram.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.catsgram.Exceptions.PostNotFoundException;
-import ru.yandex.practicum.catsgram.Exceptions.UserNotFoundException;
-import ru.yandex.practicum.catsgram.models.Post;
+import ru.yandex.practicum.catsgram.exception.PostNotFoundException;
+import ru.yandex.practicum.catsgram.exception.UserNotFoundException;
+import ru.yandex.practicum.catsgram.model.Post;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -22,13 +24,22 @@ public class PostService {
         this.userService = userService;
     }
 
-    public List<Post> findAll() {
-        return posts;
+    public List<Post> findAll(Integer size, Integer from, String sort) {
+        return posts.stream()
+                .sorted((p0, p1) -> {
+                int comp = p0.getCreationDate().compareTo(p1.getCreationDate()); //прямой порядок сортировки
+                if(sort.equals("desc")){
+                    comp = -1 * comp; //обратный порядок сортировки
+                }
+                return comp;})
+                .skip(from)
+                .limit(size)
+                .collect(Collectors.toList());
     }
 
     public Post create(Post post) {
         if (userService.findUserByEmail(post.getAuthor()) == null) {
-            throw new UserNotFoundException();
+            throw new UserNotFoundException("Автор " + post.getAuthor() + " не найден!");
         }
         post.setId(getNextId());
         posts.add(post);
@@ -43,6 +54,18 @@ public class PostService {
         return posts.stream()
                 .filter(p -> p.getId().equals(id))
                 .findFirst()
-                .orElseThrow(PostNotFoundException::new);
+                .orElseThrow(() -> new PostNotFoundException("Пост " + id + " не найден!"));
+    }
+
+    public List<Post> findAllByUserEmail(String email, Integer size, String sort) {
+        return posts.stream()
+                .filter(p -> email.equals(p.getAuthor()))
+                .sorted((p0, p1) -> {int comp = p0.getCreationDate().compareTo(p1.getCreationDate());
+                if (sort.equals("desc")) {
+                    comp = -1 * comp;
+                }
+                return comp;})
+                .limit(size)
+                .collect(Collectors.toList());
     }
 }
