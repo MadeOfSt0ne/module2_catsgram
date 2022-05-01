@@ -3,61 +3,49 @@ package ru.yandex.practicum.catsgram.service;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.catsgram.exception.InvalidEmailException;
 import ru.yandex.practicum.catsgram.exception.UserAlreadyExistException;
-import ru.yandex.practicum.catsgram.exception.UserNotFoundException;
 import ru.yandex.practicum.catsgram.model.User;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
+    private final Map<String, User> users = new HashMap<>();
 
-    private static Integer globalId;
-    private final HashMap<Integer, User> users = new HashMap<>();
-
-    public List<User> findAll() {
-        return new ArrayList<>(users.values());
+    public Collection<User> findAll() {
+        return users.values();
     }
 
-    public static Integer getNextId() {
-        return globalId++;
-    }
-
-    public User create(User user) throws InvalidEmailException, UserAlreadyExistException {
-        if (user.getEmail().isBlank() || user.getEmail() == null) {
-            throw new InvalidEmailException("Почта не может быть пустой!");
-        } else if (user.getEmail() != null) {
-            throw new UserAlreadyExistException("Пользователь с почтой " + user.getEmail() + " уже существует.");
+    public User createUser(User user) {
+        checkEmail(user);
+        if (users.containsKey(user.getEmail())) {
+            throw new UserAlreadyExistException(String.format(
+                    "Пользователь с электронной почтой %s уже зарегистрирован.",
+                    user.getEmail()
+            ));
         }
-        user.setUserId(getNextId());
-        users.put(user.getUserId(), user);
+        users.put(user.getEmail(), user);
         return user;
     }
 
-    public User update(User user) throws InvalidEmailException {
-        if (!users.containsKey(user.getUserId())) {
-            throw new UserNotFoundException(String.format("Пользователь %d не найден!", user.getUserId()));
-        }
-        if (user.getEmail().isBlank() || user.getEmail() == null) {
-            throw new InvalidEmailException("Почта не может быть пустой!");
-        }
-        users.put(user.getUserId(), user);
+    public User updateUser(User user) {
+        checkEmail(user);
+        users.put(user.getEmail(), user);
+
         return user;
     }
 
     public User findUserByEmail(String email) {
-        return users.values().stream()
-                .filter(p -> p.getEmail().equals(email))
-                .findFirst()
-                .orElse(null);
+        if (email == null) {
+            return null;
+        }
+        return users.get(email);
     }
 
-    public User findUserById(Integer id) {
-        if (!users.containsKey(id)) {
-            throw new UserNotFoundException("Пользователь с id " + id + " не найден!");
+    private void checkEmail(User user) {
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            throw new InvalidEmailException("Адрес электронной почты не может быть пустым.");
         }
-        return users.get(id);
     }
 }
-
