@@ -10,6 +10,7 @@ import ru.yandex.practicum.catsgram.exception.IncorrectParameterException;
 import ru.yandex.practicum.catsgram.model.Post;
 import ru.yandex.practicum.catsgram.service.PostService;
 
+import java.util.Collection;
 import java.util.List;
 
 import static ru.yandex.practicum.catsgram.Constants.DESCENDING_ORDER;
@@ -24,6 +25,11 @@ public class PostController {
     }
 
     @GetMapping("/posts")
+    public Collection<Post> findAll(@RequestParam String userId) {
+        return postService.findPostsByUser(userId);
+    }
+
+    /*@GetMapping("/posts")
     public List<Post> findAll(
             @RequestParam(defaultValue = "0", required = false) Integer page,
             @RequestParam(defaultValue = "10", required = false) Integer size,
@@ -51,5 +57,5 @@ public class PostController {
     @GetMapping("/post/{postId}")
     public Post findPost(@PathVariable("postId") Integer postId) {
         return postService.findPostById(postId);
-    }
+    }*/
 }
